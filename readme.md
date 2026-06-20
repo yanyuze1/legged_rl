@@ -37,7 +37,6 @@ python -m pip install -e source/legged_rl/legged_rl/rsl_rl
 ```bash
 python scripts/list_envs.py
 ```
-![alt text](images/image.png)
 - 平地训练
 ```bash
 python scripts/rsl_rl/train.py \
