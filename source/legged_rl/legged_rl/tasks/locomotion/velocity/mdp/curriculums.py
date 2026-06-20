@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025 zihan wang
+# Copyright (c) 2024-2025 Ercong Huang
 # SPDX-License-Identifier: Apache-2.0
 
 """Common functions that can be used to create curriculum for the learning environment.

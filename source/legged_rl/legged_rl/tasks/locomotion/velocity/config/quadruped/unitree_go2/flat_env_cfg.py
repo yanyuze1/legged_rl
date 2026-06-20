@@ -30,7 +30,6 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.height_scanner = None
         self.observations.policy.height_scan = None
         self.observations.critic.height_scan = None
-        self.observations.critic.height_scan = None
 
         # no terrain curriculum
         self.curriculum.terrain_levels = None
@@ -54,12 +53,12 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.reset_base.params = {
             "pose_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "yaw": (-3.14, 3.14)},
             "velocity_range": {
-                "x": (0.0, 0.0),
-                "y": (0.0, 0.0),
-                "z": (0.0, 0.0),
-                "roll": (0.0, 0.0),
-                "pitch": (0.0, 0.0),
-                "yaw": (0.0, 0.0),
+                "x": (-0.5, 0.5),
+                "y": (-0.5, 0.5),
+                "z": (-0.5, 0.5),
+                "roll": (-0.5, 0.5),
+                "pitch": (-0.5, 0.5),
+                "yaw": (-0.5, 0.5),
             },
         }
         self.events.base_com = None

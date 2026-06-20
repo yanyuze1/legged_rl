@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025 zihan wang
+# Copyright (c) 2024-2025 Ercong Huang
 # SPDX-License-Identifier: Apache-2.0
 
 from isaaclab.utils import configclass
@@ -43,8 +43,6 @@ class UnitreeGo2FlatPPORunnerCfg(UnitreeGo2RoughPPORunnerCfg):
 
         self.max_iterations = 5000
         self.experiment_name = "unitree_go2_flat"
-        self.policy.actor_hidden_dims = [128, 128, 128]
-        self.policy.critic_hidden_dims = [128, 128, 128]
 
 @configclass
 class UnitreeGo2FootstandPPORunnerCfg(UnitreeGo2RoughPPORunnerCfg):
@@ -53,5 +51,3 @@ class UnitreeGo2FootstandPPORunnerCfg(UnitreeGo2RoughPPORunnerCfg):
 
         self.max_iterations = 30000
         self.experiment_name = "unitree_go2_footstand"
-        self.policy.actor_hidden_dims = [128, 128, 128]
-        self.policy.critic_hidden_dims = [128, 128, 128]
