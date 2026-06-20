@@ -124,7 +124,7 @@ python scripts/cusrl/play.py \
 
 ## sim2sim and Real-Robot Deployment
 - Real-robot deployment in this project supports using [rl_sar](https://github.com/fan-ziqi/rl_sar) for sim2sim testing and real-robot deployment testing.
-- Regarding branch versions, the [main](https://github.com/yanyuze1/legged_rl/tree/main) branch supports deployment in robot_lab mode, while the [dev](https://github.com/yanyuze1/legged_rl/tree/dev) branch supports deployment in himloco mode, although the current results are not ideal.
+- Regarding branch versions, the [main](https://github.com/yanyuze1/legged_rl/tree/main) branch supports deployment in robot_lab mode.The [dev](https://github.com/yanyuze1/legged_rl/tree/dev) branch supports deployment in himloco mode, although the current results are not well.
 
 # Acknowledgements
 - [robot_lab](https://github.com/fan-ziqi/robot_lab)

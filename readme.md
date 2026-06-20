@@ -116,7 +116,7 @@ python scripts/cusrl/play.py \
 ```
 ## sim2sim与真机部署
 - 本项目真机部署支持使用[rl_sar](https://github.com/fan-ziqi/rl_sar)实现sim2sim测试与真机部署测试。
-- 关于版本分支方面，[main](https://github.com/yanyuze1/legged_rl/tree/main)分支支持robot_lab模式下进行部署，[dev](https://github.com/yanyuze1/legged_rl/tree/dev)分支下支持himloco模式下进行部署(但前效果不佳)。
+- 关于版本分支方面，[main](https://github.com/yanyuze1/legged_rl/tree/main)分支支持robot_lab模式下进行部署。[dev](https://github.com/yanyuze1/legged_rl/tree/dev)分支下支持himloco模式下进行部署(当前效果不佳)。
 # 致谢
 - [robot_lab](https://github.com/fan-ziqi/robot_lab)
 - [legged_lab](https://github.com/zhw0422/legged_lab)
