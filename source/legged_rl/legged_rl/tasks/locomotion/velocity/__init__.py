@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025 zihan wang
+# Copyright (c) 2024-2025 Ercong Huang
 # SPDX-License-Identifier: Apache-2.0
 
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).

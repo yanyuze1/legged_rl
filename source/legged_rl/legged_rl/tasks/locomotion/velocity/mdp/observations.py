@@ -1,10 +1,11 @@
-# Copyright (c) 2024-2025 Ercong Huang
+# Copyright (c) 2024-2026 Ercong Huang
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
 
-import torch
 from typing import TYPE_CHECKING
+
+import torch
 
 from isaaclab.assets import Articulation
 from isaaclab.managers import SceneEntityCfg

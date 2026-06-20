@@ -1,12 +1,13 @@
-# Copyright (c) 2024-2025 Ercong Huang
+# Copyright (c) 2024-2026 Ercong Huang
 # SPDX-License-Identifier: Apache-2.0
 
 """Utility functions for terrain-aware operations."""
 
 from __future__ import annotations
 
-import torch
 from typing import TYPE_CHECKING
+
+import torch
 
 if TYPE_CHECKING:
     from isaaclab.envs import ManagerBasedEnv
