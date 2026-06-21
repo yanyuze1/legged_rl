@@ -53,8 +53,8 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.add_base_mass.params["asset_cfg"].body_names = "base"
         self.events.base_external_force_torque.params["asset_cfg"].body_names = "base"
         self.events.reset_robot_joints.params["position_range"] = (1.0, 1.0)
-        self.events.randomize_reset_base.params = {
-            "pose_range": {
+        self.events.reset_base.params = {
+          "pose_range": {
                 "x": (-0.5, 0.5),
                 "y": (-0.5, 0.5),
                 "z": (0.0, 0.2),
@@ -96,7 +96,7 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         # ===== Joint Rewards =====
         self.rewards.joint_torques_l2.weight = -2.5e-5
         self.rewards.joint_vel_l1 = None
-        self.rewards.joint_vel_l2.weight = None 
+        self.rewards.joint_vel_l2.weight = -0.001
         self.rewards.joint_acc_l2.weight = -2.0e-7  
         self.rewards.joint_deviation_l1 = None
         self.rewards.joint_pos_limits.weight = -10.0
@@ -118,9 +118,8 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         # Feet rewards - 关键：鼓励正常步态
         self.rewards.feet_air_time.weight = 0.1  # 大幅增加权重，鼓励足够的腾空时间
         self.rewards.feet_air_time.params["sensor_cfg"].body_names = ".*_foot"
-        self.rewards.feet_air_time.params["threshold"] = 0.5  # 设置最小腾空时间阈值
+        self.rewards.feet_air_time.params["threshold"] = 0.2  # 设置最小腾空时间阈值
         self.rewards.feet_height = None
-        self.rewards.feet_height.params["target_height"] = 0.05
         self.rewards.feet_slide.weight = -0.1  # 启用，惩罚脚部滑动
         
         # ===== Other/Custom Rewards =====
