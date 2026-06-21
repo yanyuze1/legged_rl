@@ -30,7 +30,6 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.scene.height_scanner = None
         self.observations.policy.height_scan = None
         self.observations.critic.height_scan = None
-        self.observations.critic.height_scan = None
 
         # no terrain curriculum
         self.curriculum.terrain_levels = None
@@ -43,7 +42,10 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.observations.critic.history_length = 5
         
         # action
-        self.actions.joint_pos.scale = 0.25
+        self.actions.joint_pos.scale = {
+            ".*_hip_joint": 0.125,
+            "^(?!.*_hip_joint).*": 0.25,
+        }
 
         #------------------------------- Event -------------------------------
         self.events.push_robot = None
@@ -51,15 +53,22 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.events.add_base_mass.params["asset_cfg"].body_names = "base"
         self.events.base_external_force_torque.params["asset_cfg"].body_names = "base"
         self.events.reset_robot_joints.params["position_range"] = (1.0, 1.0)
-        self.events.reset_base.params = {
-            "pose_range": {"x": (-0.5, 0.5), "y": (-0.5, 0.5), "yaw": (-3.14, 3.14)},
+        self.events.randomize_reset_base.params = {
+            "pose_range": {
+                "x": (-0.5, 0.5),
+                "y": (-0.5, 0.5),
+                "z": (0.0, 0.2),
+                "roll": (-3.14, 3.14),
+                "pitch": (-3.14, 3.14),
+                "yaw": (-3.14, 3.14),
+            },
             "velocity_range": {
-                "x": (0.0, 0.0),
-                "y": (0.0, 0.0),
-                "z": (0.0, 0.0),
-                "roll": (0.0, 0.0),
-                "pitch": (0.0, 0.0),
-                "yaw": (0.0, 0.0),
+                "x": (-0.5, 0.5),
+                "y": (-0.5, 0.5),
+                "z": (-0.5, 0.5),
+                "roll": (-0.5, 0.5),
+                "pitch": (-0.5, 0.5),
+                "yaw": (-0.5, 0.5),
             },
         }
         self.events.base_com = None
@@ -72,8 +81,8 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         
         # ===== Base Rewards =====
         # Tracking rewards
-        self.rewards.track_lin_vel_xy_exp.weight = 1.5
-        self.rewards.track_ang_vel_z_exp.weight = 0.75
+        self.rewards.track_lin_vel_xy_exp.weight = 3.0
+        self.rewards.track_ang_vel_z_exp.weight = 1.5
         
         # Base penalties
         self.rewards.lin_vel_z_l2.weight = -2.0
@@ -85,9 +94,9 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.base_ang_vel_x_l2 = None
         
         # ===== Joint Rewards =====
-        self.rewards.joint_torques_l2.weight = -2e-4
+        self.rewards.joint_torques_l2.weight = -2.5e-5
         self.rewards.joint_vel_l1 = None
-        self.rewards.joint_vel_l2.weight = -0.001  
+        self.rewards.joint_vel_l2.weight = None 
         self.rewards.joint_acc_l2.weight = -2.0e-7  
         self.rewards.joint_deviation_l1 = None
         self.rewards.joint_pos_limits.weight = -10.0
@@ -96,7 +105,7 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.joint_power = None
         
         # Action penalties 
-        self.rewards.action_rate_l2.weight = -0.1
+        self.rewards.action_rate_l2.weight = -0.01
         self.rewards.action_l2 = None
         
         # ===== Contact Rewards =====
@@ -111,6 +120,7 @@ class UnitreeGo2FlatEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.feet_air_time.params["sensor_cfg"].body_names = ".*_foot"
         self.rewards.feet_air_time.params["threshold"] = 0.5  # 设置最小腾空时间阈值
         self.rewards.feet_height = None
+        self.rewards.feet_height.params["target_height"] = 0.05
         self.rewards.feet_slide.weight = -0.1  # 启用，惩罚脚部滑动
         
         # ===== Other/Custom Rewards =====
