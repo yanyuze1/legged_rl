@@ -27,13 +27,15 @@ if TYPE_CHECKING:
 def feet_air_time(
     env: ManagerBasedRLEnv, command_name: str, sensor_cfg: SceneEntityCfg, threshold: float
 ) -> torch.Tensor:
-    """Reward long steps taken by the feet using L2-kernel.
+    """
+    Reward long steps taken by the feet using L2-kernel.
 
     This function rewards the agent for taking steps that are longer than a threshold. This helps ensure
     that the robot lifts its feet off the ground and takes steps. The reward is computed as the sum of
     the time for which the feet are in the air.
 
     If the commands are small (i.e. the agent is not supposed to take a step), then the reward is zero.
+    四足腾空步态奖励，鼓励四足机器人完成抬腿迈步，速度过小时清空迈步奖励。
     """
     # extract the used quantities (to enable type-hinting)
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
@@ -47,12 +49,14 @@ def feet_air_time(
 
 
 def feet_air_time_positive_biped(env, command_name: str, threshold: float, sensor_cfg: SceneEntityCfg) -> torch.Tensor:
-    """Reward long steps taken by the feet for bipeds.
+    """
+    Reward long steps taken by the feet for bipeds.
 
     This function rewards the agent for taking steps up to a specified threshold and also keep one foot at
     a time in the air.
 
     If the commands are small (i.e. the agent is not supposed to take a step), then the reward is zero.
+    双腿腾空步态奖励，鼓励双腿交替腾空，鼓励踏步
     """
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
     # compute the reward
@@ -73,11 +77,13 @@ def double_flight_penalty(
     sensor_cfg: SceneEntityCfg,
     command_name: str = "base_velocity",
 ) -> torch.Tensor:
-    """Penalize both feet being off the ground simultaneously (double-flight phase).
+    """
+    Penalize both feet being off the ground simultaneously (double-flight phase).
 
     Returns 1.0 whenever *all* tracked feet are in the air at the same time
     and the velocity command is non-trivial, 0.0 otherwise.  Use with a
     negative reward weight to discourage bunny-hopping.
+    双足同时离地惩罚
     """
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
     contact_time = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids]
@@ -92,11 +98,13 @@ def double_flight_penalty(
 
 
 def feet_slide(env, sensor_cfg: SceneEntityCfg, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
-    """Penalize feet sliding.
+    """
+    Penalize feet sliding.
 
     This function penalizes the agent for sliding its feet on the ground. The reward is computed as the
     norm of the linear velocity of the feet multiplied by a binary contact sensor. This ensures that the
     agent is penalized only when the feet are in contact with the ground.
+    脚滑惩罚
     """
     # Penalize feet sliding
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
@@ -167,6 +175,9 @@ def feet_gait(
     threshold: float = 0.5,
     command_name=None,
 ) -> torch.Tensor:
+    """
+    显示步态相位奖励
+    """
     contact_sensor: ContactSensor = env.scene.sensors[sensor_cfg.name]
     is_contact = contact_sensor.data.current_contact_time[:, sensor_cfg.body_ids] > 0
 
@@ -190,7 +201,10 @@ def feet_gait(
 def track_lin_vel_xy_yaw_frame_exp(
     env, std: float, command_name: str, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
-    """Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel."""
+    """
+    Reward tracking of linear velocity commands (xy axes) in the gravity aligned robot frame using exponential kernel.
+    线速度跟踪奖励
+    """
     # extract the used quantities (to enable type-hinting)
     asset = env.scene[asset_cfg.name]
     vel_yaw = quat_apply_inverse(yaw_quat(asset.data.root_quat_w), asset.data.root_lin_vel_w[:, :3])
@@ -203,14 +217,20 @@ def track_lin_vel_xy_yaw_frame_exp(
 def track_ang_vel_z_world_exp(
     env, command_name: str, std: float, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
-    """Reward tracking of angular velocity commands (yaw) in world frame using exponential kernel."""
+    """
+    Reward tracking of angular velocity commands (yaw) in world frame using exponential kernel.
+    yaw角速度跟踪奖励
+    """
     # extract the used quantities (to enable type-hinting)
     asset = env.scene[asset_cfg.name]
     ang_vel_error = torch.square(env.command_manager.get_command(command_name)[:, 2] - asset.data.root_ang_vel_w[:, 2])
     return torch.exp(-ang_vel_error / std**2)
 
 def joint_power(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")) -> torch.Tensor:
-    """Reward joint_power"""
+    """
+    Reward joint_power
+    关节功率奖励，鼓励关节节能
+    """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     # compute the reward
@@ -223,14 +243,18 @@ def joint_power(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntityC
 def stand_still_joint_deviation_l1(
     env, command_name: str, command_threshold: float = 0.06, asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
-    """Penalize offsets from the default joint positions when the command is very small."""
+    """
+    Penalize offsets from the default joint positions when the command is very small.
+    静止状态下的站姿约束
+    """
     command = env.command_manager.get_command(command_name)
     # Penalize motion when command is nearly zero.
     return mdp.joint_deviation_l1(env, asset_cfg) * (torch.norm(command[:, :2], dim=1) < command_threshold)
 
 
 def joint_mirror(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, mirror_joints: list[list[str]]) -> torch.Tensor:
-    """Penalize joint position differences between mirrored joints (e.g., left-right leg symmetry).
+    """
+    Penalize joint position differences between mirrored joints (e.g., left-right leg symmetry).
     
     This reward helps ensure symmetric gait patterns by penalizing differences between corresponding
     joints on opposite sides of the robot (e.g., left_hip vs right_hip).
@@ -243,6 +267,7 @@ def joint_mirror(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, mirror_joint
     
     Returns:
         Penalty proportional to joint position differences between mirrored pairs.
+    左右关节对称位置惩罚，优先学会站稳后实现关节的左右对称
     """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
@@ -266,7 +291,8 @@ def joint_mirror(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, mirror_joint
 
 
 def action_mirror(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, mirror_joints: list[list[str]]) -> torch.Tensor:
-    """Penalize action differences between mirrored joints (e.g., left-right leg symmetry).
+    """
+    Penalize action differences between mirrored joints (e.g., left-right leg symmetry).
     
     This reward helps ensure symmetric control commands by penalizing differences in action magnitudes
     between corresponding joints on opposite sides of the robot.
@@ -279,6 +305,7 @@ def action_mirror(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg, mirror_join
     
     Returns:
         Penalty proportional to action differences between mirrored pairs.
+    左右对称动作惩罚
     """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
@@ -319,6 +346,7 @@ def body_roll_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntity
     
     Returns:
         Penalty proportional to the square of the roll angle.
+    倾斜惩罚
     """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
@@ -339,6 +367,7 @@ def body_pitch_l2(env: ManagerBasedRLEnv, asset_cfg: SceneEntityCfg = SceneEntit
     
     Returns:
         Penalty proportional to the square of the pitch angle.
+    俯仰惩罚
     """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
@@ -355,6 +384,9 @@ def handstand_feet_height_exp(
     target_height: float,
     asset_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
 ) -> torch.Tensor:
+    """
+    双腿站立任务奖励，奖励feet/body高度接近目标高度
+    """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     feet_height = asset.data.body_pos_w[:, asset_cfg.body_ids, 2]
@@ -387,6 +419,9 @@ def handstand_feet_air_time(env: ManagerBasedRLEnv, sensor_cfg: SceneEntityCfg, 
 def handstand_orientation_l2(
     env: ManagerBasedRLEnv, target_gravity: list[float], asset_cfg: SceneEntityCfg = SceneEntityCfg("robot")
 ) -> torch.Tensor:
+    """
+    特殊姿态方向惩罚，惩罚机体反向朝向
+    """
     # extract the used quantities (to enable type-hinting)
     asset: Articulation = env.scene[asset_cfg.name]
     # Define the target gravity direction for an upright posture in the base frame
