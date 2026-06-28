@@ -67,6 +67,7 @@ from isaaclab.managers import ObservationTermCfg as ObsTerm
 from isaaclab.utils.dict import print_dict
 
 from isaaclab_tasks.utils.hydra import hydra_task_config  # noqa: F401
+from isaaclab_tasks.utils import get_checkpoint_path
 
 import legged_rl.tasks  # noqa: F401  # isort: skip
 
@@ -122,15 +123,22 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
             func=lambda env: torch.tensor(controller.advance(), dtype=torch.float32).unsqueeze(0).to(env.device),
         )
 
+    log_root_path = os.path.join("logs", "cusrl", agent_cfg.experiment_name)
+    log_root_path = os.path.abspath(log_root_path)
+    print(f"[INFO] Loading experiment from directory: {log_root_path}")
+
     if args_cli.checkpoint is None:
-        args_cli.checkpoint = os.path.join("logs", "cusrl", agent_cfg.experiment_name)
-    trial = cusrl.Trial(args_cli.checkpoint)
-    if trial is not None:
-        log_dir = trial.home
+        checkpoint_path = get_checkpoint_path(
+            log_root_path,
+            run_dir=".*",
+            checkpoint="ckpt_.*.pt",
+            other_dirs=["ckpt"],
+        )
     else:
-        # specify directory for logging videos
-        log_dir = os.path.join("logs", "cusrl", agent_cfg.experiment_name)
-        log_dir = os.path.abspath(log_dir)
+        checkpoint_path = args_cli.checkpoint
+
+    trial = cusrl.Trial(checkpoint_path)
+    log_dir = trial.home
 
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
