@@ -127,4 +127,5 @@ python scripts/cusrl/play.py \
 # 致谢
 - [robot_lab](https://github.com/fan-ziqi/robot_lab)
 - [legged_lab](https://github.com/zhw0422/legged_lab)
-- [RSL_RL]()
+- [RSL_RL](https://github.com/leggedrobotics/rsl_rl)
+- [CUSRL](https://github.com/chengruiz/cusrl)
