@@ -132,4 +132,5 @@ For detailed learning about rsl_rl, see [Eryingzhang's video](https://www.bilibi
 # Acknowledgements
 - [robot_lab](https://github.com/fan-ziqi/robot_lab)
 - [legged_lab](https://github.com/zhw0422/legged_lab)
-- [RSL_RL]()
+- [RSL_RL](https://github.com/leggedrobotics/rsl_rl)
+- [CUSRL](https://github.com/chengruiz/cusrl)
